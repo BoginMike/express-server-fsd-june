@@ -1,4 +1,5 @@
 var express = require('express')
+var jwt = require('jsonwebtoken')
 var dotenv = require('dotenv')
 var { songRoutes } = require('./apis/songs.js')
 var { recpRoutes } = require('./apis/recipes.js');
@@ -35,9 +36,27 @@ function authenticateBasic(req, res, next) {
 
 }
 
+
+function autheticate(req, res, next) {
+    if (process.env.AUTH_NEEDED == "true") {
+        let token = req.headers.token;
+        try {
+            jwt.verify(token, process.env.SECRET_KEY)
+            next();
+
+        } catch (error) {
+            res.json({ message: "Unauthorized Request" })
+            return;
+        }
+
+    } else {
+        next();
+    }
+}
+
 app.use("/users", userRoutes)
-app.use("/songs", authenticateBasic, counterMiddleware, songRoutes)
-app.use("/recipes", authenticateBasic, recpRoutes)
+app.use("/songs", autheticate, counterMiddleware, songRoutes)
+app.use("/recipes", autheticate, recpRoutes)
 
 app.get("/", (req, res) => {
     res.send("App working...")
