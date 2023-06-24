@@ -29,7 +29,7 @@ userRoutes.get('/generate-token', (req, res) => {
     if (allValidUsers.find(x => x.username == username && x.password == password)) {
 
         let token = jwt.sign({ username }, process.env.SECRET_KEY, {
-            expiresIn: "30m"
+            expiresIn: process.env.TOKEN_EXPIRES_IN
         })
 
         res.json({
