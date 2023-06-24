@@ -21,14 +21,14 @@ songRoutes.get('/', attachSystemTime, (req, res) => {
     res.json(data)
 })
 
-songRoutes.post("/", attachSystemTime, (req, res) => {
+songRoutes.post("/", (req, res) => {
     let song = req.body;
     song["id"] = uuidv4()
     pushJsonToFile('./songs.json', song)
     res.send("Song Created")
 })
 
-songRoutes.delete('/',attachSystemTime, (req, res) => {
+songRoutes.delete('/', (req, res) => {
     let id = req.query.id;
     //logic to delete song with this id from the array
     deleteFromJsonFile('./songs.json', id)
