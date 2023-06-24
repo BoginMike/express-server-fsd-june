@@ -1,8 +1,9 @@
 var { Router } = require('express')
-var { uuidv4, pushJsonToFile, deleteFromJsonFile, getJsonFromFile, writeJsonToFile } = require('../utilities/utils.js')
+var { uuidv4, pushJsonToFile, deleteFromJsonFile, getJsonFromFile, writeJsonToFile } = require('../utilities/utils.js');
+const { counterMiddleware } = require('../utilities/counterMiddleware.js');
 const recpRoutes = Router();
 
-recpRoutes.get('/', (req, res) => {
+recpRoutes.get('/', counterMiddleware, (req, res) => {
     let data = getJsonFromFile('./recipes.json')
     res.json(data)
 })

@@ -1,23 +1,37 @@
 var { Router } = require('express')
-var { uuidv4, getJsonFromFile, pushJsonToFile, writeJsonToFile,deleteFromJsonFile } = require('../utilities/utils.js')
+var { uuidv4, getJsonFromFile, pushJsonToFile, writeJsonToFile, deleteFromJsonFile } = require('../utilities/utils.js');
+const { counterMiddleware } = require('../utilities/counterMiddleware.js');
 const songRoutes = Router();
 
-songRoutes.get('/', (req, res) => {
+
+function middleware2(req, res, next) {
+
+    console.log("middleware 2 executed....")
+
+    next();
+}
+
+function attachSystemTime(req, res, next) {
+    res.setHeader('SagarServerDate', new Date())
+    next()
+}
+
+songRoutes.get('/', attachSystemTime, (req, res) => {
     let data = getJsonFromFile('./songs.json')
     res.json(data)
 })
 
-songRoutes.post("/", (req, res) => {
+songRoutes.post("/", attachSystemTime, (req, res) => {
     let song = req.body;
     song["id"] = uuidv4()
     pushJsonToFile('./songs.json', song)
     res.send("Song Created")
 })
 
-songRoutes.delete('/', (req, res) => {
+songRoutes.delete('/',attachSystemTime, (req, res) => {
     let id = req.query.id;
     //logic to delete song with this id from the array
-    deleteFromJsonFile('./songs.json', id)   
+    deleteFromJsonFile('./songs.json', id)
     res.send("Song Deleted")
 })
 
