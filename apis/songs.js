@@ -1,4 +1,5 @@
 var { Router } = require('express')
+var { MongoClient, ObjectId } = require('mongodb')
 var { uuidv4, getJsonFromFile, pushJsonToFile, writeJsonToFile, deleteFromJsonFile } = require('../utilities/utils.js');
 const { counterMiddleware } = require('../utilities/counterMiddleware.js');
 const songRoutes = Router();
@@ -16,41 +17,78 @@ function attachSystemTime(req, res, next) {
     next()
 }
 
-songRoutes.get('/', attachSystemTime, (req, res) => {
-    let data = getJsonFromFile('./songs.json')
-    res.json(data)
+songRoutes.get('/', (req, res) => {
+    // database connection here   
+    console.log('we are in get route')
+    const client = new MongoClient("mongodb+srv://admin:123@cluster0.nva7yak.mongodb.net")
+    client.connect().then(connection => {
+        console.log('connection made')
+        const db = connection.db('fsd')
+        db.collection('songs')
+            .find()
+            .toArray()
+            .then(data => {
+                return res.json(data)
+            })
+    })
 })
 
 songRoutes.post("/", (req, res) => {
     let song = req.body;
-    song["id"] = uuidv4()
-    pushJsonToFile('./songs.json', song)
-    res.send("Song Created")
+
+    const client = new MongoClient("mongodb+srv://admin:123@cluster0.nva7yak.mongodb.net")
+    client.connect().then(connection => {
+        console.log('connection made')
+        const db = connection.db('fsd')
+        db.collection('songs')
+            .insertOne(song)
+            .then(x => {
+                // 
+                if (x.acknowledged) {
+                    res.send("Song Created")
+                } else {
+                    res.send("Something went wrong")
+                }
+            })
+    })
+
+
+
 })
 
 songRoutes.delete('/', (req, res) => {
-    let id = req.query.id;
+    let id = req.query.id; // read id as a string
     //logic to delete song with this id from the array
-    deleteFromJsonFile('./songs.json', id)
-    res.send("Song Deleted")
+
+    const client = new MongoClient("mongodb+srv://admin:123@cluster0.nva7yak.mongodb.net")
+    client.connect().then(connection => {
+        console.log('connection made')
+        const db = connection.db('fsd')
+        db.collection('songs')
+            .deleteOne({ _id: new ObjectId(id) })
+            .then(x => {
+                res.send('Song Deleted.')
+            })
+    })
 })
 
 songRoutes.put('/', (req, res) => {
     let id = req.query.id;
     let newSongData = req.body;
 
-    // get the old song and update with new values;
-    let data = getJsonFromFile('./songs.json')
-    for (const oldSong of data) {
-        if (oldSong.id == id) {
-            oldSong.songName = newSongData.songName;
-            oldSong.rating = newSongData.rating;
-        }
-    }
-    writeJsonToFile('./songs.json', data)
+
+    const client = new MongoClient("mongodb+srv://admin:123@cluster0.nva7yak.mongodb.net")
+    client.connect().then(connection => {
+        console.log('connection made')
+        const db = connection.db('fsd')
+        db.collection('songs')
+            .updateOne({ _id: new ObjectId(id) }, { $set: newSongData })
+            .then(x => {
+                res.send("record updated.")
+            })
+    })
 
 
-    res.send("resocr updated.")
 })
 
 

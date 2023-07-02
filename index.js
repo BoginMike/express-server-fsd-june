@@ -37,7 +37,7 @@ function authenticateBasic(req, res, next) {
 }
 
 
-function autheticate(req, res, next) {
+function authenticate(req, res, next) {
     if (process.env.AUTH_NEEDED == "true") {
         let token = req.headers.token;
         try {
@@ -55,8 +55,8 @@ function autheticate(req, res, next) {
 }
 
 app.use("/users", userRoutes)
-app.use("/songs", autheticate, counterMiddleware, songRoutes)
-app.use("/recipes", autheticate, recpRoutes)
+app.use("/songs", authenticate, songRoutes)
+app.use("/recipes", authenticate, recpRoutes)
 
 app.get("/", (req, res) => {
     res.send("App working...")
