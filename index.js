@@ -1,5 +1,6 @@
 var express = require('express')
 var jwt = require('jsonwebtoken')
+var cors = require('cors')
 var dotenv = require('dotenv')
 var { songRoutes } = require('./apis/songs.js')
 var { recpRoutes } = require('./apis/recipes.js');
@@ -10,8 +11,7 @@ dotenv.config();
 var app = express();
 
 app.use(express.json())
-
-
+app.use(cors())
 
 function authenticateBasic(req, res, next) {
 
@@ -45,7 +45,7 @@ function autheticate(req, res, next) {
             next();
 
         } catch (error) {
-            res.json({ message: "Unauthorized Request" })
+            res.json({ message: "Unauthorized Request", status: false })
             return;
         }
 
