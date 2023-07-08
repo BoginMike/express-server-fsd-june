@@ -20,7 +20,7 @@ function attachSystemTime(req, res, next) {
 songRoutes.get('/', (req, res) => {
     // database connection here   
     console.log('we are in get route')
-    const client = new MongoClient("mongodb+srv://admin:123@cluster0.nva7yak.mongodb.net")
+    const client = new MongoClient(process.env.DB_CONNECTION_STRING)
     client.connect().then(connection => {
         console.log('connection made')
         const db = connection.db('fsd')
@@ -36,7 +36,7 @@ songRoutes.get('/', (req, res) => {
 songRoutes.post("/", (req, res) => {
     let song = req.body;
 
-    const client = new MongoClient("mongodb+srv://admin:123@cluster0.nva7yak.mongodb.net")
+    const client = new MongoClient(process.env.DB_CONNECTION_STRING)
     client.connect().then(connection => {
         console.log('connection made')
         const db = connection.db('fsd')
@@ -60,7 +60,7 @@ songRoutes.delete('/', (req, res) => {
     let id = req.query.id; // read id as a string
     //logic to delete song with this id from the array
 
-    const client = new MongoClient("mongodb+srv://admin:123@cluster0.nva7yak.mongodb.net")
+    const client = new MongoClient(process.env.DB_CONNECTION_STRING)
     client.connect().then(connection => {
         console.log('connection made')
         const db = connection.db('fsd')
@@ -77,7 +77,7 @@ songRoutes.put('/', (req, res) => {
     let newSongData = req.body;
 
 
-    const client = new MongoClient("mongodb+srv://admin:123@cluster0.nva7yak.mongodb.net")
+    const client = new MongoClient(process.env.DB_CONNECTION_STRING)
     client.connect().then(connection => {
         console.log('connection made')
         const db = connection.db('fsd')

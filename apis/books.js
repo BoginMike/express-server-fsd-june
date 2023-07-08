@@ -15,7 +15,7 @@ booksRoutes.get('/', (req, res) => {
     let limitCount = pageSize
 
     //mongoDb Query
-    const client = new MongoClient("mongodb+srv://admin:123@cluster0.nva7yak.mongodb.net")
+    const client = new MongoClient(process.env.DB_CONNECTION_STRING)
     client.connect().then(connection => {
         console.log('connection made')
         const db = connection.db('fsd')

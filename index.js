@@ -58,7 +58,7 @@ function authenticate(req, res, next) {
 app.use("/users", userRoutes)
 app.use("/songs", authenticate, songRoutes)
 app.use("/recipes", authenticate, recpRoutes)
-app.use("/books", booksRoutes)
+app.use("/books", authenticate, booksRoutes)
 
 app.get("/", (req, res) => {
     res.send("App working...")
