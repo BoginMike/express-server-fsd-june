@@ -19,12 +19,27 @@ booksRoutes.get('/', (req, res) => {
     client.connect().then(connection => {
         console.log('connection made')
         const db = connection.db('fsd')
-        db.collection('books')
-            .aggregate([{ $skip: skipCount }, { $limit: limitCount }])
-            .toArray()
-            .then(data => {
-                return res.json(data)
-            })
+        db.collection('books').aggregate([{ $count: "count" }]).toArray()
+            .then(x => {
+                let totalCount = x[0].count;
+
+
+                db.collection('books')
+                    .aggregate([{ $skip: skipCount }, { $limit: limitCount }])
+                    .toArray()
+                    .then(data => {
+                        return res.json({
+                            pageSize,
+                            pageNumber,
+                            data,
+                            totalCount
+                        })
+                    })
+
+
+
+            });
+
     })
 
 
