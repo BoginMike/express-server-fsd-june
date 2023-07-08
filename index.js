@@ -4,6 +4,7 @@ var cors = require('cors')
 var dotenv = require('dotenv')
 var { songRoutes } = require('./apis/songs.js')
 var { recpRoutes } = require('./apis/recipes.js');
+var { booksRoutes } = require('./apis/books.js');
 const { counterMiddleware } = require('./utilities/counterMiddleware.js');
 const { getJsonFromFile } = require('./utilities/utils.js');
 const { userRoutes } = require('./apis/users.js');
@@ -57,6 +58,7 @@ function authenticate(req, res, next) {
 app.use("/users", userRoutes)
 app.use("/songs", authenticate, songRoutes)
 app.use("/recipes", authenticate, recpRoutes)
+app.use("/books", booksRoutes)
 
 app.get("/", (req, res) => {
     res.send("App working...")
