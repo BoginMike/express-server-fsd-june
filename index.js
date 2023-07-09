@@ -5,9 +5,9 @@ var dotenv = require('dotenv')
 var { songRoutes } = require('./apis/songs.js')
 var { recpRoutes } = require('./apis/recipes.js');
 var { booksRoutes } = require('./apis/books.js');
-const { counterMiddleware } = require('./utilities/counterMiddleware.js');
 const { getJsonFromFile } = require('./utilities/utils.js');
 const { userRoutes } = require('./apis/users.js');
+const { postRoutes } = require('./apis/posts.js')
 dotenv.config();
 var app = express();
 
@@ -59,6 +59,7 @@ app.use("/users", userRoutes)
 app.use("/songs", authenticate, songRoutes)
 app.use("/recipes", authenticate, recpRoutes)
 app.use("/books", authenticate, booksRoutes)
+app.use("/posts",authenticate,postRoutes)
 
 app.get("/", (req, res) => {
     res.send("App working...")

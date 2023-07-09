@@ -1,7 +1,5 @@
 var { Router } = require('express')
 var { MongoClient, ObjectId } = require('mongodb')
-var { uuidv4, getJsonFromFile, pushJsonToFile, writeJsonToFile, deleteFromJsonFile } = require('../utilities/utils.js');
-const { counterMiddleware } = require('../utilities/counterMiddleware.js');
 const songRoutes = Router();
 
 

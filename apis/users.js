@@ -1,22 +1,52 @@
 var { Router } = require('express')
-var jwt = require('jsonwebtoken')
-var { uuidv4, pushJsonToFile, getJsonFromFile } = require('../utilities/utils.js');
+var jwt = require('jsonwebtoken');
+const { MongoClient, ObjectId } = require('mongodb');
 const userRoutes = Router();
 
 userRoutes.post('/', (req, res) => {
     let userObj = req.body;
 
-    let prevUsers = getJsonFromFile('./users.json')
-    if (prevUsers.find(x => x.username.toLowerCase() == userObj.username.toLowerCase())) {
-        res.send("User already exists!!")
-        return
-    }
+    // store user in mongodb
+    const client = new MongoClient(process.env.DB_CONNECTION_STRING)
+    client.connect().then(connection => {
+        console.log('connection made')
+        const db = connection.db('fsd')
+        db.collection('users')
+            .insertOne(userObj)
+            .then(x => {
+                // 
+                if (x.acknowledged) {
+                    res.send("User Created")
+                } else {
+                    res.send("Something went wrong")
+                }
+            })
+    })
 
-
-    userObj['id'] = uuidv4();
-    pushJsonToFile('./users.json', userObj)
-    res.send("User Created")
 });
+
+
+
+userRoutes.patch('/', (req, res) => {
+    let { _id, ...newFields } = req.body;
+
+    const client = new MongoClient(process.env.DB_CONNECTION_STRING)
+    client.connect().then(connection => {
+        console.log('connection made')
+        const db = connection.db('fsd')
+        db.collection('users')
+            .updateOne({ _id: new ObjectId(_id) }, { $set: newFields })
+            .then(x => {
+                // 
+                if (x.acknowledged) {
+                    res.send("User Updated")
+                } else {
+                    res.send("Something went wrong")
+                }
+            })
+    })
+
+})
 
 
 userRoutes.get('/generate-token', (req, res) => {
@@ -24,22 +54,37 @@ userRoutes.get('/generate-token', (req, res) => {
     let username = req.headers.username;
     let password = req.headers.password;
 
-    let allValidUsers = getJsonFromFile('./users.json')
 
-    if (allValidUsers.find(x => x.username == username && x.password == password)) {
+    const client = new MongoClient(process.env.DB_CONNECTION_STRING)
+    client.connect().then(connection => {
+        console.log('connection made')
+        const db = connection.db('fsd')
+        db.collection('users')
+            .find({ username: username, password: password })
+            .toArray()
+            .then(data => {
+                if (data && data.length > 0) {
 
-        let token = jwt.sign({ username }, process.env.SECRET_KEY, {
-            expiresIn: process.env.TOKEN_EXPIRES_IN
-        })
+                    let token = jwt.sign({ username }, process.env.SECRET_KEY, {
+                        expiresIn: process.env.TOKEN_EXPIRES_IN
+                    })
 
-        res.json({
-            token: token
-        })
-    } else {
-        res.json({
-            token: ""
-        })
-    }
+                    res.json({
+                        token: token
+                    })
+                } else {
+                    res.json({
+                        token: ""
+                    })
+                }
+
+
+            })
+    })
+
+
+
+
 })
 
 
