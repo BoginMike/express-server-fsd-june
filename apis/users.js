@@ -16,9 +16,9 @@ userRoutes.post('/', (req, res) => {
             .then(x => {
                 // 
                 if (x.acknowledged) {
-                    res.send("User Created")
+                    res.json("User Created")
                 } else {
-                    res.send("Something went wrong")
+                    res.json("Something went wrong")
                 }
             })
     })
@@ -39,9 +39,9 @@ userRoutes.patch('/', (req, res) => {
             .then(x => {
                 // 
                 if (x.acknowledged) {
-                    res.send("User Updated")
+                    res.json("User Updated")
                 } else {
-                    res.send("Something went wrong")
+                    res.json("Something went wrong")
                 }
             })
     })

@@ -17,9 +17,9 @@ postRoutes.post('/', (req, res) => {
             .then(x => {
                 // 
                 if (x.acknowledged) {
-                    res.send("Post Created")
+                    res.json("Post Created")
                 } else {
-                    res.send("Something went wrong")
+                    res.json("Something went wrong")
                 }
             })
     })
