@@ -64,10 +64,15 @@ userRoutes.get('/generate-token', (req, res) => {
             .toArray()
             .then(data => {
                 if (data && data.length > 0) {
-
-                    let token = jwt.sign({ username }, process.env.SECRET_KEY, {
-                        expiresIn: process.env.TOKEN_EXPIRES_IN
-                    })
+                    let user = data[0];
+                    let token = jwt.sign({
+                        username: user.username,
+                        profilePicture: user.profilePicture
+                    },
+                        process.env.SECRET_KEY,
+                        {
+                            expiresIn: process.env.TOKEN_EXPIRES_IN
+                        })
 
                     res.json({
                         token: token
