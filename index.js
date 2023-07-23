@@ -1,5 +1,4 @@
 var express = require('express')
-var jwt = require('jsonwebtoken')
 var cors = require('cors')
 var mongo = require('mongodb')
 var dotenv = require('dotenv')
@@ -10,6 +9,7 @@ const { getJsonFromFile } = require('./utilities/utils.js');
 const { userRoutes } = require('./apis/users.js');
 const { postRoutes } = require('./apis/posts.js')
 const { upload } = require('./utilities/grid-fs.util.js')
+const { authenticate } = require('./utilities/middlewares.js')
 dotenv.config();
 var app = express();
 
@@ -53,22 +53,6 @@ function authenticateBasic(req, res, next) {
 }
 
 
-function authenticate(req, res, next) {
-    if (process.env.AUTH_NEEDED == "true") {
-        let token = req.headers.token;
-        try {
-            jwt.verify(token, process.env.SECRET_KEY)
-            next();
-
-        } catch (error) {
-            res.json({ message: "Unauthorized Request", status: false })
-            return;
-        }
-
-    } else {
-        next();
-    }
-}
 
 app.use("/users", userRoutes)
 app.use("/songs", authenticate, songRoutes)

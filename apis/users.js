@@ -1,6 +1,7 @@
 var { Router } = require('express')
 var jwt = require('jsonwebtoken');
 const { MongoClient, ObjectId } = require('mongodb');
+const { authenticate } = require('../utilities/middlewares');
 const userRoutes = Router();
 
 userRoutes.post('/', (req, res) => {
@@ -46,6 +47,33 @@ userRoutes.patch('/', (req, res) => {
             })
     })
 
+})
+
+
+userRoutes.get('/my-info', authenticate, (req, res) => {
+    let userdata = req.headers.userdata;
+    const client = new MongoClient(process.env.DB_CONNECTION_STRING)
+
+    client.connect().then(connection => {
+        console.log('connection made')
+        const db = connection.db('fsd')
+        db.collection('users')
+            .find({ username: userdata.username })
+            .toArray()
+            .then(data => {
+                if (data && data.length > 0) {
+                    let user = data[0];
+                    res.json({
+                        data: user,
+                        status: true
+                    })
+                } else {
+                    res.json({
+                        status: false
+                    })
+                }
+            })
+    })
 })
 
 
